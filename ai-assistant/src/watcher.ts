@@ -88,7 +88,7 @@ export const startWatcher = (): void => {
             await pushBranch(branchName);
             await createPullRequest(branchName);
             // Switch back to dev
-            await checkoutDevBranch();
+            // await checkoutDevBranch();
 
             console.log("✅ Fix applied, committed, pushed, and returned to dev");
         } catch (error) {

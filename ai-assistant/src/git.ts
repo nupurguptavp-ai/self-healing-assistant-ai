@@ -4,8 +4,6 @@ const git = simpleGit("../");
 
 //Pull the latest dev
 export async function checkoutDevBranch() {
-    await ensureCleanWorkingTree();
-
     const currentBranch = await git.revparse(["--abbrev-ref", "HEAD"]);
 
     if (currentBranch !== "dev") {
@@ -34,20 +32,4 @@ export async function commitFix(message: string) {
 
 export async function pushBranch(branchName: string) {
     await git.push("origin", branchName);
-}
-
-export async function ensureCleanWorkingTree() {
-    const status = await git.status();
-
-    const relevantFiles = status.files.filter(
-        (file) => file.path !== "logs/error.log"
-    );
-
-    if (relevantFiles.length > 0) {
-        throw new Error(
-            `Git working tree is not clean. Modified files: ${relevantFiles
-                .map((f) => f.path)
-                .join(", ")}`
-        );
-    }
 }
