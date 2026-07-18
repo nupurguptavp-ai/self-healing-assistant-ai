@@ -4,7 +4,7 @@ export interface User {
 }
 
 export const getUser = (): User => {
-  const json = '{"id": 1, "name": "Nupur"}';
+  const json = '{"id": 1, name: "Nupur"}';
 
   return JSON.parse(json);
 };
