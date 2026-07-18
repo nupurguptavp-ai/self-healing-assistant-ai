@@ -7,8 +7,17 @@ import { generateFix } from "./ai.js";
 import { applyFix } from "./fixer.js";
 import { readSourceFile } from "./fileReader.js";
 
+import {
+    checkoutDevBranch,
+    createFixBranch,
+    commitFix,
+    pushBranch,
+} from "./git.js";
+import { createPullRequest } from "./github.js";
+
 dotenv.config();
 
+let isProcessing = false;
 const LOG_FILE = process.env.LOG_FILE_PATH;
 
 if (!LOG_FILE) {
@@ -23,6 +32,11 @@ export const startWatcher = (): void => {
     console.log(`👀 Watching ${LOG_FILE}`);
 
     watcher.on("change", async () => {
+        if (isProcessing) {
+            console.log("⏳ Already processing an error. Skipping...");
+            return;
+        }
+        isProcessing = true;
         try {
             console.log("\n🚨 New error detected\n");
 
@@ -50,17 +64,37 @@ export const startWatcher = (): void => {
 
             console.log("📄 Source file loaded");
 
+            // Prepare Git
+            await checkoutDevBranch();
+            const branchName = await createFixBranch();
+
             // Generate AI fix
             console.log("🤖 Generating AI fix...");
 
             const fixedCode = await generateFix(log.msg, sourceCode);
 
             // Apply fix
-            await applyFix(frame.filePath, fixedCode);
+            const hasChanges = await applyFix(frame.filePath, fixedCode);
 
-            console.log("✅ Fix applied successfully");
+            if (!hasChanges) {
+                console.log("⏭️ Skipping commit because no changes were made.");
+                return;
+            }
+
+            // Commit
+            await commitFix("fix: AI generated runtime fix");
+
+            // Push
+            await pushBranch(branchName);
+            await createPullRequest(branchName);
+            // Switch back to dev
+            await checkoutDevBranch();
+
+            console.log("✅ Fix applied, committed, pushed, and returned to dev");
         } catch (error) {
             console.error("❌ Watcher Error:", error);
+        } finally {
+            isProcessing = false;
         }
     });
 };
