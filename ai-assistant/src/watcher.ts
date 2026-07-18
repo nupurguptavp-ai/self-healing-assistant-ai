@@ -24,6 +24,10 @@ if (!LOG_FILE) {
     throw new Error("LOG_FILE_PATH is not defined");
 }
 
+/**
+ * Starts the file watcher and triggers the AI self-healing workflow
+ * whenever a new error is detected in the log file.
+ */
 export const startWatcher = (): void => {
     const watcher = chokidar.watch(LOG_FILE, {
         ignoreInitial: true,

@@ -1,6 +1,12 @@
 import fs from "node:fs/promises";
 import type { ErrorLog } from "./types.js";
 
+/**
+ * Reads and returns the most recent error log from the log file.
+ *
+ * @param logFile - Path to the log file.
+ * @returns The latest parsed error log.
+ */
 export const getLatestLog = async (
     logFile: string
 ): Promise<ErrorLog> => {

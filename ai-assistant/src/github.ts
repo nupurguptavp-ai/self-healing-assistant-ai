@@ -10,6 +10,12 @@ const octokit = new Octokit({
 const owner = process.env.GITHUB_OWNER!;
 const repo = process.env.GITHUB_REPO!;
 
+
+/**
+ * Creates a GitHub pull request for the AI-generated fix.
+ *
+ * @param branchName - Name of the source branch containing the fix.
+ */
 export async function createPullRequest(branchName: string) {
     const response = await octokit.pulls.create({
         owner,
