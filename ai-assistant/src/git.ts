@@ -39,10 +39,15 @@ export async function pushBranch(branchName: string) {
 export async function ensureCleanWorkingTree() {
     const status = await git.status();
 
-    if (!status.isClean()) {
+    const relevantFiles = status.files.filter(
+        (file) => file.path !== "logs/error.log"
+    );
+
+    if (relevantFiles.length > 0) {
         throw new Error(
-            "Git working tree is not clean. Commit or stash your changes first."
+            `Git working tree is not clean. Modified files: ${relevantFiles
+                .map((f) => f.path)
+                .join(", ")}`
         );
     }
 }
-
