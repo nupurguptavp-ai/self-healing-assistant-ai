@@ -6,7 +6,6 @@ const git = simpleGit("../");
  * Checks out the `dev` branch and pulls the latest changes.
  */
 export async function checkoutDevBranch() {
-    await ensureCleanWorkingTree();
     const currentBranch = await git.revparse(["--abbrev-ref", "HEAD"]);
 
     if (currentBranch !== "dev") {
