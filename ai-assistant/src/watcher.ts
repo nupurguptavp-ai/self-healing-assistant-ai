@@ -1,11 +1,8 @@
 import chokidar from "chokidar";
 import dotenv from "dotenv";
 
-import { getLatestLog } from "./parser.js";
-import { parseStackTrace } from "./stackParser.js";
+import { getLatestLog, parseStackTrace, applyFix, readSourceFile } from "./utils.js";
 import { generateFix } from "./ai.js";
-import { applyFix } from "./fixer.js";
-import { readSourceFile } from "./fileReader.js";
 
 import {
     checkoutDevBranch,
